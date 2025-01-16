@@ -57,7 +57,9 @@ function calculate(buttonID) {
       } else if (buttonID === "#btn-sign") {
         math = addSign(math);
       } else if (buttonID === "#btn-equal") {
-        math = eval(math).toString();
+        // Handle expressions with parentheses before evaluation
+        let evalExpression = math.replace(/\(-(\d+\.?\d*)\)/g, '-$1');
+        math = eval(evalExpression).toString();
       } else {
       }
     }
@@ -65,6 +67,35 @@ function calculate(buttonID) {
   $("#output > p").text(math);
 }
 
-function addSign(math) {
-  return math;
+function addSign(expression) {
+  if (!expression) return '0';
+  
+  // If the expression is already a negative number in parentheses
+  if (expression.match(/^\(-\d+\.?\d*\)$/)) {
+    // Remove the parentheses and negative sign
+    return expression.slice(2, -1);
+  }
+  
+  // If it's just a regular number (positive or with operators)
+  if (expression.match(/^\d+\.?\d*$/)) {
+    // Add parentheses and negative sign
+    return `(-${expression})`;
+  }
+  
+  // For expressions with operators, handle the last number
+  const parts = expression.split(/([+\-*/%])/);
+  if (parts.length > 1) {
+    const lastPart = parts[parts.length - 1];
+    
+    // If the last part is a negative number in parentheses
+    if (lastPart.match(/^\(-\d+\.?\d*\)$/)) {
+      parts[parts.length - 1] = lastPart.slice(2, -1);
+    } else if (lastPart.match(/^\d+\.?\d*$/)) {
+      parts[parts.length - 1] = `(-${lastPart})`;
+    }
+    
+    return parts.join('');
+  }
+  
+  return expression;
 }
