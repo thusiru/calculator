@@ -57,8 +57,11 @@ function calculate(buttonID) {
       } else if (buttonID === "#btn-sign") {
         math = addSign(math);
       } else if (buttonID === "#btn-equal") {
-        math = eval(math).toString();
-      } else {
+        try {
+          math = eval(math).toString();
+        } catch (error) {
+          math = "Error";
+        }
       }
     }
   }
@@ -66,5 +69,28 @@ function calculate(buttonID) {
 }
 
 function addSign(math) {
-  return math;
+  const lastOperatorIndex = Math.max(
+      math.lastIndexOf('+'),
+      math.lastIndexOf('-'),
+      math.lastIndexOf('*'),
+      math.lastIndexOf('/'),
+      math.lastIndexOf('%')
+  );
+
+  const lastNumberStartIndex = lastOperatorIndex + 1;
+  const lastNumber = math.slice(lastNumberStartIndex).trim();
+
+  if (!lastNumber) return math;
+
+  if (lastNumber.startsWith('(-') && lastNumber.endsWith(')')) {
+
+      return `${math.slice(0, lastOperatorIndex + 1)}${lastNumber.slice(2, -1)}`;
+  }
+
+
+  if (lastNumber.startsWith('-')) {
+      return `${math.slice(0, lastOperatorIndex + 1)}${lastNumber.slice(1)}`;
+  }
+
+  return `${math.slice(0, lastOperatorIndex + 1)}(-${lastNumber})`;
 }
