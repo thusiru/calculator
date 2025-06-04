@@ -57,17 +57,18 @@ function calculate(buttonID) {
       } else if (buttonID === "#btn-sign") {
         math = addSign(math);
       } else if (buttonID === "#btn-equal") {
-        try {
-          math = eval(math).toString();
-        } catch (error) {
-          math = "Error";
-        }
+
+        // Handle expressions with parentheses before evaluation
+        let evalExpression = math.replace(/\(-(\d+\.?\d*)\)/g, '-$1');
+        math = eval(evalExpression).toString();
+      } else {
+        main
       }
     }
   }
   $("#output > p").text(math);
 }
-
+ Functionality-for-sign-toggle-switch
 function addSign(math) {
   const lastOperatorIndex = Math.max(
       math.lastIndexOf('+'),
@@ -93,4 +94,5 @@ function addSign(math) {
   }
 
   return `${math.slice(0, lastOperatorIndex + 1)}(-${lastNumber})`;
+
 }
