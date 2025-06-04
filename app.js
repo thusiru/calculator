@@ -57,45 +57,42 @@ function calculate(buttonID) {
       } else if (buttonID === "#btn-sign") {
         math = addSign(math);
       } else if (buttonID === "#btn-equal") {
+
         // Handle expressions with parentheses before evaluation
         let evalExpression = math.replace(/\(-(\d+\.?\d*)\)/g, '-$1');
         math = eval(evalExpression).toString();
       } else {
+        main
       }
     }
   }
   $("#output > p").text(math);
 }
+ Functionality-for-sign-toggle-switch
+function addSign(math) {
+  const lastOperatorIndex = Math.max(
+      math.lastIndexOf('+'),
+      math.lastIndexOf('-'),
+      math.lastIndexOf('*'),
+      math.lastIndexOf('/'),
+      math.lastIndexOf('%')
+  );
 
-function addSign(expression) {
-  if (!expression) return '0';
-  
-  // If the expression is already a negative number in parentheses
-  if (expression.match(/^\(-\d+\.?\d*\)$/)) {
-    // Remove the parentheses and negative sign
-    return expression.slice(2, -1);
+  const lastNumberStartIndex = lastOperatorIndex + 1;
+  const lastNumber = math.slice(lastNumberStartIndex).trim();
+
+  if (!lastNumber) return math;
+
+  if (lastNumber.startsWith('(-') && lastNumber.endsWith(')')) {
+
+      return `${math.slice(0, lastOperatorIndex + 1)}${lastNumber.slice(2, -1)}`;
   }
-  
-  // If it's just a regular number (positive or with operators)
-  if (expression.match(/^\d+\.?\d*$/)) {
-    // Add parentheses and negative sign
-    return `(-${expression})`;
+
+
+  if (lastNumber.startsWith('-')) {
+      return `${math.slice(0, lastOperatorIndex + 1)}${lastNumber.slice(1)}`;
   }
-  
-  // For expressions with operators, handle the last number
-  const parts = expression.split(/([+\-*/%])/);
-  if (parts.length > 1) {
-    const lastPart = parts[parts.length - 1];
-    
-    // If the last part is a negative number in parentheses
-    if (lastPart.match(/^\(-\d+\.?\d*\)$/)) {
-      parts[parts.length - 1] = lastPart.slice(2, -1);
-    } else if (lastPart.match(/^\d+\.?\d*$/)) {
-      parts[parts.length - 1] = `(-${lastPart})`;
-    }
-    
-    return parts.join('');
-  }
-  
-  return expression;
+
+  return `${math.slice(0, lastOperatorIndex + 1)}(-${lastNumber})`;
+
 }
